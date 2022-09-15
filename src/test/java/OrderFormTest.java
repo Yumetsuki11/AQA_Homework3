@@ -20,6 +20,7 @@ public class OrderFormTest {
         options.addArguments("--no-sandbox");
         options.addArguments("--headless");
         driver = new ChromeDriver();
+        driver.get("http://localhost:9999");
     }
 
     @AfterEach
@@ -30,9 +31,9 @@ public class OrderFormTest {
 
     @Test
     void shouldSubmitWhenAllFieldsFilledCorrectly_NameWithSpaces() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман Сол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+15058425662");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман Сол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+15058425662");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
         String actual = driver.findElement(By.cssSelector("p")).getText().trim();
@@ -41,9 +42,9 @@ public class OrderFormTest {
 
     @Test
     void shouldSubmitWhenAllFieldsFilledCorrectly_NameWithoutSpaces() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("ГудманСол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+15058425662");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("ГудманСол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+15058425662");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
         String actual = driver.findElement(By.cssSelector("p")).getText().trim();
@@ -52,9 +53,9 @@ public class OrderFormTest {
 
     @Test
     void shouldSubmitWhenAllFieldsFilledCorrectly_NameWithDashesAndWithoutSpaces() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гуд-манСол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+15058425662");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гуд-манСол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+15058425662");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
         String actual = driver.findElement(By.cssSelector("p")).getText().trim();
@@ -63,9 +64,9 @@ public class OrderFormTest {
 
     @Test
     void shouldSubmitWhenAllFieldsFilledCorrectly_NameWithSpacesAndDashes() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Лингстад Анни-Фрид");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+46812132860");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Лингстад Анни-Фрид");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+46812132860");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
         String actual = driver.findElement(By.cssSelector("p")).getText().trim();
@@ -74,150 +75,160 @@ public class OrderFormTest {
 
     @Test
     void shouldFailWhenNameIsEmpty() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+15058425662");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+15058425662");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_text input_view_default input_size_m input_width_available input_has-label input_invalid input_theme_alfa-on-white']")).size() != 0);
+        String expected = "Поле обязательно для заполнения";
+        Assertions.assertEquals(expected, driver.findElement(By.cssSelector(".input_type_text.input_invalid .input__sub")).getText().trim());
     }
 
     @Test
     void shouldFailWhenNameContainsLatin() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Goodman Saul");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+15058425662");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Goodman Saul");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+15058425662");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_text input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
+        String expected = "Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.";
+        Assertions.assertEquals(expected, driver.findElement(By.cssSelector(".input_type_text.input_invalid .input__sub")).getText().trim());
     }
 
     @Test
     void shouldFailWhenNameContainsMarks() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман, Сол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+15058425662");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман, Сол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+15058425662");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_text input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
+        String expected = "Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.";
+        Assertions.assertEquals(expected, driver.findElement(By.cssSelector(".input_type_text.input_invalid .input__sub")).getText().trim());
     }
 
     @Test
     void shouldFailWhenNameContainsNumbers() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман С0л");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+15058425662");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман С0л");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+15058425662");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_text input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
+        String expected = "Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.";
+        Assertions.assertEquals(expected, driver.findElement(By.cssSelector(".input_type_text.input_invalid .input__sub")).getText().trim());
     }
 
     @Test
     void shouldFailWhenPhoneIsEmpty() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман Сол");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман Сол");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_tel input_view_default input_size_m input_width_available input_has-label input_invalid input_theme_alfa-on-white']")).size() != 0);
+        String expected = "Поле обязательно для заполнения";
+        Assertions.assertEquals(expected, driver.findElement(By.cssSelector(".input_type_tel.input_invalid .input__sub")).getText().trim());
     }
 
     @Test
     void shouldFailWhenPhoneStartsWithoutPlus() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман Сол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("15058425662");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман Сол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("15058425662");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_tel input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
+        String expected = "Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.";
+        Assertions.assertEquals(expected, driver.findElement(By.cssSelector(".input_type_tel.input_invalid .input__sub")).getText().trim());
     }
 
     @Test
     void shouldFailWhenPhoneContainsMoreThan11() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман Сол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+150584256662");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман Сол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+150584256662");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_tel input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
+        String expected = "Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.";
+        Assertions.assertEquals(expected, driver.findElement(By.cssSelector(".input_type_tel.input_invalid .input__sub")).getText().trim());
     }
 
     @Test
     void shouldFailWhenPhoneContainsLessThan11() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман Сол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+1");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман Сол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+1");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_tel input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
+        String expected = "Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.";
+        Assertions.assertEquals(expected, driver.findElement(By.cssSelector(".input_type_tel.input_invalid .input__sub")).getText().trim());
     }
 
     @Test
     void shouldFailWhenPhoneContainsLetters() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман Сол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+1BetterCаll");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман Сол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+1BetterCаll");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_tel input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
+        String expected = "Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.";
+        Assertions.assertEquals(expected, driver.findElement(By.cssSelector(".input_type_tel.input_invalid .input__sub")).getText().trim());
     }
 
     @Test
     void shouldFailWhenPhoneContainsMarks() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман Сол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+111-111-111");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман Сол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+111-111-111");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_tel input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
+        String expected = "Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.";
+        Assertions.assertEquals(expected, driver.findElement(By.cssSelector(".input_type_tel.input_invalid .input__sub")).getText().trim());
     }
 
     @Test
     void shouldFailWhenNoCheck() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман Сол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+15058425662");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман Сол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+15058425662");
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("label[class='checkbox checkbox_size_m checkbox_theme_alfa-on-white input_invalid']")).size() != 0);
+        Assertions.assertTrue(driver.findElements(By.cssSelector(".checkbox.input_invalid")).size() != 0);
     }
 
     @Test
     void shouldOnlyShowCaptionUnderNameWhenNameAndPhoneBothInvalid() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман, Сол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("kidNamedFinger");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман, Сол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("kidNamedFinger");
         driver.findElement(By.cssSelector(".checkbox__box")).click();
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_text input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
-        Assertions.assertFalse(driver.findElements(By.cssSelector("span[class='input input_type_tel input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
+        Assertions.assertTrue(driver.findElements(By.cssSelector(".input_type_text.input_invalid")).size() != 0);
+        Assertions.assertFalse(driver.findElements(By.cssSelector(".input_type_tel.input_invalid")).size() != 0);
     }
 
     @Test
     void shouldOnlyShowCaptionUnderPhoneWhenPhoneAndCheckboxBothInvalid() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман Сол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("kidNamedFinger");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман Сол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("kidNamedFinger");
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_tel input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
-        Assertions.assertFalse(driver.findElements(By.cssSelector("label[class='checkbox checkbox_size_m checkbox_theme_alfa-on-white input_invalid']")).size() != 0);
+        Assertions.assertTrue(driver.findElements(By.cssSelector(".input_type_tel.input_invalid")).size() != 0);
+        Assertions.assertFalse(driver.findElements(By.cssSelector(".checkbox.input_invalid")).size() != 0);
     }
 
     @Test
     void shouldOnlyShowCaptionUnderNameWhenNameAndCheckboxBothInvalid() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман, Сол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("+15058425662");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман, Сол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("+15058425662");
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_text input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
-        Assertions.assertFalse(driver.findElements(By.cssSelector("label[class='checkbox checkbox_size_m checkbox_theme_alfa-on-white input_invalid']")).size() != 0);
+        Assertions.assertTrue(driver.findElements(By.cssSelector(".input_type_text.input_invalid")).size() != 0);
+        Assertions.assertFalse(driver.findElements(By.cssSelector(".checkbox.input_invalid")).size() != 0);
     }
 
     @Test
     void shouldOnlyShowCaptionUnderNameWhenAllValuesInvalid() {
-        driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector(".input__control[type=\"text\"]")).sendKeys("Гудман, Сол");
-        driver.findElement(By.cssSelector(".input__control[type=\"tel\"]")).sendKeys("kidNamedFinger");
+
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] .input__control")).sendKeys("Гудман, Сол");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] .input__control")).sendKeys("kidNamedFinger");
         driver.findElement(By.cssSelector("[type=\"button\"]")).click();
-        Assertions.assertTrue(driver.findElements(By.cssSelector("span[class='input input_type_text input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
-        Assertions.assertFalse(driver.findElements(By.cssSelector("label[class='checkbox checkbox_size_m checkbox_theme_alfa-on-white input_invalid']")).size() != 0);
-        Assertions.assertFalse(driver.findElements(By.cssSelector("span[class='input input_type_tel input_view_default input_size_m input_width_available input_has-label input_has-value input_invalid input_theme_alfa-on-white']")).size() != 0);
+        Assertions.assertTrue(driver.findElements(By.cssSelector(".input_type_text.input_invalid")).size() != 0);
+        Assertions.assertFalse(driver.findElements(By.cssSelector(".checkbox.input_invalid")).size() != 0);
+        Assertions.assertFalse(driver.findElements(By.cssSelector(".input_type_tel.input_invalid")).size() != 0);
     }
 }
